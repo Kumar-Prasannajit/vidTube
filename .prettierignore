@@ -1,0 +1,22 @@
+# Dependencies
+node_modules/
+
+# Build/Output directories
+dist/
+build/
+coverage/
+
+# Public assets (images, icons)
+public/
+
+# Lock files
+package-lock.json
+yarn.lock
+
+# Environment files
+.env
+.env.*
+
+# Standard hidden files
+.DS_Store
+.git/
