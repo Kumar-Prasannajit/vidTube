@@ -1,5 +1,6 @@
 import mongoose, { Schema } from 'mongoose';
-import bcypt from 'bcrypt';
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
 const userSchema = new Schema(
     {
@@ -51,16 +52,14 @@ const userSchema = new Schema(
 )
 
 //hash password before saving
-userSchema.pre('save', async function (next) {
-    if (!this.isModified('password')) return next();
+userSchema.pre('save', async function () {
+    if (!this.isModified('password')) return;
 
     this.password = await bcrypt.hash(this.password, 10);
-    next();
 });
 
-
 //generate access token
-userSchema.methods.generateAccessToken = async function () {
+userSchema.methods.generateAccessToken = function () {
     const payLoad = {
         userId: this._id,
         username: this.username,
@@ -69,16 +68,16 @@ userSchema.methods.generateAccessToken = async function () {
         avatar: this.avatar
     }
 
-    return JsonWebTokenError.sign(payLoad, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '25m' });
+    return jwt.sign(payLoad, process.env.ACCESS_TOKEN_SECRET, { expiresIn: process.env.ACCESS_TOKEN_EXPIRY || '25m' });
 }
 
 //generate refresh token
-userSchema.methods.generateRefreshToken = async function () {
+userSchema.methods.generateRefreshToken = function () {
     const payLoad = {
         userId: this._id
     }
 
-    return JsonWebTokenError.sign(payLoad, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '10d' });
+    return jwt.sign(payLoad, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '10d' });
 }
 
 export const User = mongoose.model('User', userSchema);

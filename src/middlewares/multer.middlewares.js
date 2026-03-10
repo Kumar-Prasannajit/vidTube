@@ -1,13 +1,21 @@
 import multer from "multer";
+import fs from "fs";
+
+const uploadDir = "public/uploads/";
+
+// Create directory if it doesn't exist
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
 
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) { //specify the destination directory where the uploaded files will be stored
-        cb(null, 'public/uploads/');
+    destination: function (req, file, cb) {
+        cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9); //generating unique suffix for file name example: 1623456789012-123456789
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, uniqueSuffix + '-' + file.originalname);
     }
 })
 
-export const upload = multer({ storage: storage }); //multer instance with the defined storage configuration
+export const upload = multer({ storage: storage });
