@@ -80,4 +80,9 @@ userSchema.methods.generateRefreshToken = function () {
     return jwt.sign(payLoad, process.env.REFRESH_TOKEN_SECRET, { expiresIn: process.env.REFRESH_TOKEN_EXPIRY || '10d' });
 }
 
+//is password correct
+userSchema.methods.isPasswordCorrect = async function (enteredPassword) {
+    return await bcrypt.compare(enteredPassword, this.password);
+}
+
 export const User = mongoose.model('User', userSchema);
